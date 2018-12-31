@@ -112,6 +112,9 @@ export function createApp(
             {spacer()}
             <Link href={feedbackUrl}>feedback</Link>
           </p>
+          <ProjectDetail
+            title={`${this.props.repoId.owner}/${this.props.repoId.name}`}
+          />
           <button
             disabled={
               appState.type === "UNINITIALIZED" ||
@@ -134,6 +137,14 @@ export function createApp(
       );
     }
   };
+}
+
+export class ProjectDetail extends React.PureComponent<{|
+  +title: string,
+|}> {
+  render() {
+    return <p>{this.props.title}</p>;
+  }
 }
 
 export class LoadingIndicator extends React.PureComponent<{|
