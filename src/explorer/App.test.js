@@ -12,7 +12,7 @@ import {FactorioStaticAdapter} from "../plugins/demo/appAdapter";
 import {defaultWeightsForAdapter} from "./weights/weights";
 
 import {PagerankTable} from "./pagerankTable/Table";
-import {createApp, LoadingIndicator} from "./App";
+import {createApp, LoadingIndicator, ProjectDetail} from "./App";
 import {Prefix as GithubPrefix} from "../plugins/github/nodes";
 
 require("../webutil/testUtil").configureEnzyme();
@@ -109,6 +109,14 @@ describe("explorer/App", () => {
     );
     expect(link).toHaveLength(1);
     expect(link.prop("href")).toMatch(/https?:\/\//);
+  });
+
+  it("should have a project title", () => {
+    const {el} = example();
+    const projectDetail = el.find(ProjectDetail);
+    expect(projectDetail.props().title).toBe("foo/bar");
+    const wrapper = shallow(<ProjectDetail title="foo/bar"/>);
+    expect(wrapper.find('p').text()).toBe("foo/bar");
   });
 
   describe("when in state:", () => {
