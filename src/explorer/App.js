@@ -112,9 +112,7 @@ export function createApp(
             {spacer()}
             <Link href={feedbackUrl}>feedback</Link>
           </p>
-          <p>
-            {`${this.props.repoId.owner}/${this.props.repoId.name}`}
-          </p>
+          <p>{`${this.props.repoId.owner}/${this.props.repoId.name}`}</p>
           <button
             disabled={
               appState.type === "UNINITIALIZED" ||
