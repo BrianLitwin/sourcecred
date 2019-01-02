@@ -142,9 +142,9 @@ export function createApp(
 export class ProjectDetail extends React.PureComponent<{|
   +title: string,
 |}> {
-  return(
-    <p>{this.props.title}</p>
-  )
+  render() {
+    return <p>{this.props.title}</p>;
+  }
 }
 
 export class LoadingIndicator extends React.PureComponent<{|

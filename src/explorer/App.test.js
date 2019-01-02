@@ -115,8 +115,8 @@ describe("explorer/App", () => {
     const {el} = example();
     const projectDetail = el.find(ProjectDetail);
     expect(projectDetail.props().title).toBe("foo/bar");
-    const wrapper = shallow(<ProjectDetail title="foo/bar"/>);
-    expect(wrapper.find('p').text()).toBe("foo/bar");
+    const wrapper = shallow(<ProjectDetail title="foo/bar" />);
+    expect(wrapper.find("p").text()).toBe("foo/bar");
   });
 
   describe("when in state:", () => {
