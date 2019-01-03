@@ -143,7 +143,9 @@ export class ProjectDetail extends React.PureComponent<{|
   +title: string,
 |}> {
   render() {
-    return <p>{this.props.title}</p>;
+    return (
+      <p>{this.props.title}</p>
+    )
   }
 }
 
