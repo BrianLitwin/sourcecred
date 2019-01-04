@@ -7,7 +7,7 @@ import type {LocalStore} from "../webutil/localStore";
 import CheckedLocalStore from "../webutil/checkedLocalStore";
 import BrowserLocalStore from "../webutil/browserLocalStore";
 import Link from "../webutil/Link";
-import type {RepoId} from "../core/repoId";
+import {type RepoId, repoIdToString} from "../core/repoId";
 
 import {PagerankTable} from "./pagerankTable/Table";
 import type {WeightedTypes} from "../analysis/weights";
@@ -141,7 +141,7 @@ export class ProjectDetail extends React.PureComponent<{|
   +repoId: RepoId,
 |}> {
   render() {
-    return <p>{`${this.props.repoId.owner}/${this.props.repoId.name}`}</p>;
+    return <p>{`${repoIdToString(this.props.repoId)}`}</p>;
   }
 }
 

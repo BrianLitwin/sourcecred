@@ -3,6 +3,7 @@
 import stringify from "json-stable-stringify";
 import React, {type ComponentType} from "react";
 
+import repoIdToString from "../core/repoId"
 import type {RepoIdRegistry} from "../core/repoIdRegistry";
 import Link from "../webutil/Link";
 import type {Assets} from "../webutil/assets";
@@ -27,7 +28,7 @@ export default function makePrototypesPage(
             {registry.map((x) => (
               <li key={stringify(x)}>
                 <Link to={`/prototypes/${x.repoId.owner}/${x.repoId.name}/`}>
-                  {`${x.repoId.owner}/${x.repoId.name}`}
+                  {`${repoIdToString(x.repoId)}`}
                 </Link>
               </li>
             ))}
