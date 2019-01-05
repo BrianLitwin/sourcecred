@@ -38,6 +38,14 @@ describe("explorer/pagerankTable/Table", () => {
       expect(columnNames).toEqual(COLUMNS());
     });
 
+    it("renders the graph's total node count", async () => {
+      const {element, pnd} = await setup();
+      const tag = element.findWhere(
+        (x) => x.is("p") && x.text() === `Graph loaded: ${pnd.size} nodes`
+      );
+      expect(tag).toHaveLength(1);
+    });
+
     describe("has a WeightConfig", () => {
       function findButton(element) {
         const button = element

@@ -73,6 +73,7 @@ export class PagerankTable extends React.PureComponent<
     const {showWeightConfig} = this.state;
     return (
       <div style={{marginTop: 10}}>
+        <p>Graph loaded: {this.props.pnd.size} nodes</p>
         {this.renderConfigurationRow()}
         {showWeightConfig && (
           <WeightConfig
