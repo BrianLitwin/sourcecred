@@ -48,7 +48,10 @@ export class PagerankTable extends React.PureComponent<
     this.state = {topLevelFilter, showWeightConfig: false};
   }
 
+
   renderConfigurationRow() {
+    // this.props.adapters.static().nodeTypes().forEach((x) => console.log(x))
+
     const {showWeightConfig} = this.state;
     return (
       <div style={{display: "flex"}}>
@@ -70,10 +73,37 @@ export class PagerankTable extends React.PureComponent<
   }
 
   render() {
-    const {showWeightConfig} = this.state;
+    const {showWeightConfig, topLevelFilter} = this.state;
+    const {pnd, maxEntriesPerList} = this.props;
+
+    const nodeType = this.props.adapters.static().typeMatchingNode(topLevelFilter)
+    const nodes = Array.from(pnd.keys()).filter((node) =>
+      NodeAddress.hasPrefix(node, topLevelFilter)
+    )
+    const nodeCountTotal = pnd.size
+    const nodeCountFiltered = nodes.length
+
+    function formatNodeCount(nodeType, nodeCountFiltered) {
+      const length = nodes.length > maxEntriesPerList ? maxEntriesPerList : nodes.length
+      return `Displaying top ${length} of ${nodeCountFiltered} ${nodeType.name} nodes`
+    }
+
+    const totalCount = `Graph contains ${pnd.size} nodes in total`
+
+    function renderGraphDetail() {
+
+      const a = 1; 
+
+      return(
+        <div>
+          <p>{formatNodeCount(nodeType, nodeCountFiltered)}</p>
+          <p>{totalCount}</p>
+        </div>
+      )
+    }
+
     return (
       <div style={{marginTop: 10}}>
-        <p>Graph loaded: {this.props.pnd.size} nodes</p>
         {this.renderConfigurationRow()}
         {showWeightConfig && (
           <WeightConfig
@@ -82,7 +112,8 @@ export class PagerankTable extends React.PureComponent<
             onChange={(wt) => this.props.onWeightedTypesChange(wt)}
           />
         )}
-        {this.renderTable()}
+        {renderGraphDetail()}
+        {this.renderTable(nodes)}
       </div>
     );
   }
@@ -134,12 +165,11 @@ export class PagerankTable extends React.PureComponent<
     );
   }
 
-  renderTable() {
+  renderTable(nodes) {
     const {pnd, adapters, maxEntriesPerList} = this.props;
     if (pnd == null || adapters == null || maxEntriesPerList == null) {
       throw new Error("Impossible.");
     }
-    const topLevelFilter = this.state.topLevelFilter;
     const sharedProps = {pnd, adapters, maxEntriesPerList};
     return (
       <table
@@ -158,12 +188,11 @@ export class PagerankTable extends React.PureComponent<
             <th style={{textAlign: "right"}}>Cred</th>
           </tr>
         </thead>
+
         <tbody>
           <NodeRowList
             sharedProps={sharedProps}
-            nodes={Array.from(pnd.keys()).filter((node) =>
-              NodeAddress.hasPrefix(node, topLevelFilter)
-            )}
+            nodes={nodes}
           />
         </tbody>
       </table>
