@@ -1,6 +1,7 @@
 // @flow
 
 import React, {type Node as ReactNode} from "react";
+import {StyleSheet, css} from "aphrodite/no-important";
 
 type TableRowProps = {|
   // How many layers of nested scope we're in (changes the color)
@@ -49,10 +50,21 @@ export class TableRow extends React.PureComponent<
         ? ""
         : (connectionProportion * 100).toFixed(2) + "%";
     const backgroundColor = `hsla(150,100%,28%,${1 - 0.9 ** depth})`;
+
+    const trStyle = depth > 0
+      ? css(StyleSheet.create({
+        trBg: {
+          backgroundColor: backgroundColor
+        }
+      }).trBg)
+      : css(style.trHover)
+
     return (
       <React.Fragment>
         {showPadding && <PaddingRow backgroundColor={backgroundColor} />}
-        <tr key="self" style={{backgroundColor}}>
+        <tr key="self"
+          className={trStyle}
+        >
           <td style={{display: "flex", alignItems: "flex-start"}}>
             <button
               style={{
@@ -95,3 +107,11 @@ export function PaddingRow(props: {|+backgroundColor: string|}) {
     </tr>
   );
 }
+
+const style = StyleSheet.create({
+    trHover: {
+    ":hover": {
+      backgroundColor: `#F5F8FA`,
+    }
+  }
+})

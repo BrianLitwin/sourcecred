@@ -11,6 +11,7 @@ import type {DynamicAppAdapter} from "../adapters/appAdapter";
 import {FALLBACK_NAME} from "../../analysis/fallbackDeclaration";
 import type {WeightedTypes} from "../../analysis/weights";
 import {WeightConfig} from "../weights/WeightConfig";
+import {logGraphDetail} from "./GraphDetail"
 
 import {NodeRowList} from "./Node";
 
@@ -74,12 +75,20 @@ export class PagerankTable extends React.PureComponent<
 
   render() {
     const {showWeightConfig, topLevelFilter} = this.state;
-    const {pnd, maxEntriesPerList} = this.props;
+    const {pnd, maxEntriesPerList, adapters} = this.props;
 
     const nodeType = this.props.adapters.static().typeMatchingNode(topLevelFilter)
     const nodes = Array.from(pnd.keys()).filter((node) =>
       NodeAddress.hasPrefix(node, topLevelFilter)
     )
+
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+    //  console.log(typeof(pnd.keys()))
+
+    // pnd.keys().forEach((key) => {
+    //   console.log(key)
+    // })
+
     const nodeCountTotal = pnd.size
     const nodeCountFiltered = nodes.length
 
@@ -90,17 +99,31 @@ export class PagerankTable extends React.PureComponent<
 
     const totalCount = `Graph contains ${pnd.size} nodes in total`
 
+    var count = 0;
+    var total = 0;
+
+    for (const node of nodes) {
+      count++;
+      const cred = pnd.get(node).score
+      total += cred;
+    }
+
+    var avg = (total/count).toFixed(2);
+
     function renderGraphDetail() {
-
-      const a = 1; 
-
       return(
         <div>
           <p>{formatNodeCount(nodeType, nodeCountFiltered)}</p>
+          <p> avg: {avg}</p>
           <p>{totalCount}</p>
         </div>
       )
     }
+
+    logGraphDetail({
+      pnd: pnd,
+      dynamicAdapterSet: adapters
+    })
 
     return (
       <div style={{marginTop: 10}}>
@@ -112,7 +135,6 @@ export class PagerankTable extends React.PureComponent<
             onChange={(wt) => this.props.onWeightedTypesChange(wt)}
           />
         )}
-        {renderGraphDetail()}
         {this.renderTable(nodes)}
       </div>
     );
