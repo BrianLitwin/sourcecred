@@ -2,10 +2,20 @@
 
 import React from "react";
 import {shallow} from "enzyme";
-import {TableRow, PaddingRow} from "./TableRow";
+import {TableRow, PaddingRow, style } from "./TableRow";
+import { StyleSheetTestUtils } from "aphrodite/no-important";
 
 import {COLUMNS} from "./sharedTestUtils";
 require("../../webutil/testUtil").configureEnzyme();
+
+beforeEach(() => {
+  StyleSheetTestUtils.suppressStyleInjection();
+});
+
+afterEach(() => {
+  StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
+});
+
 
 describe("explorer/pagerankTable/TableRow", () => {
   function example() {
