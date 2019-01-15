@@ -46,6 +46,7 @@ describe("explorer/pagerankTable/TableRow", () => {
       );
       const trStyle = el.find("tr").props().style;
       const buttonStyle = el.find("button").props().style;
+      expect(buttonStyle.marginLeft).toBe(20)
       expect({depth, trStyle, buttonStyle}).toMatchSnapshot();
     }
   });

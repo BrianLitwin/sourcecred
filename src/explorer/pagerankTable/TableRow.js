@@ -51,8 +51,8 @@ export class TableRow extends React.PureComponent<
         : (connectionProportion * 100).toFixed(2) + "%";
     const backgroundColor = `hsla(150,100%,28%,${1 - 0.9 ** depth})`;
     const trStyle = depth > 0
-      ? css(setBackground(backgroundColor))
-      : css(style.trHover)
+      ? css(setStaticTrBackground(backgroundColor))
+      : css(style.highlightOnHover)
 
     return (
       <React.Fragment>
@@ -102,14 +102,14 @@ export function PaddingRow(props: {|+backgroundColor: string|}) {
 }
 
 export const style = StyleSheet.create({
-  trHover: {
+  highlightOnHover: {
     ":hover": {
-      backgroundColor: "#F5F8FA"
+      backgroundColor: "#EBF1F5"
     }
   }
 })
 
-export function setBackground(backgroundColor) {
+export function setStaticTrBackground(backgroundColor) {
   return StyleSheet.create({
       trGreenHighlight: { backgroundColor: backgroundColor }
     }).trGreenHighlight

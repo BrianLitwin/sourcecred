@@ -1,7 +1,7 @@
 
 import React from "react";
 import {shallow} from "enzyme";
-import {TableRow, PaddingRow, style, setBackground} from "./TableRow";
+import {TableRow, PaddingRow, style, setTrBackground} from "./TableRow";
 import {StyleSheetTestUtils} from "aphrodite/no-important";
 
 
@@ -45,7 +45,7 @@ describe("explorer/pagerankTable/TableRow", () => {
 
     const trStyle = tableAtDepth(1).find("tr").props().className
     const bgColor = `hsla(150,100%,28%,${1 - 0.9 ** 1})`
-    const aphroditeStyle = setBackground(bgColor)
+    const aphroditeStyle = setTrBackground(bgColor)
     expect(trStyle).toBe(aphroditeStyle._name)
     expect(aphroditeStyle._definition.backgroundColor).toBe(bgColor)
   })
