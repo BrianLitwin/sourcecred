@@ -26,6 +26,7 @@ export function logGraphDetail(props) {
     'adapters': {}
   };
 
+  const allNodes = Array.from(pnd.keys())
   const adapters = Array.from(dynamicAdapterSet.adapters())
   .filter((a) => a.static().declaration().name !== FALLBACK_NAME)
 
@@ -47,7 +48,7 @@ export function logGraphDetail(props) {
     };
 
     nodeTypes.forEach((nodeType) => {
-      const nodes = Array.from(pnd.keys()).filter((node) =>
+      const nodes = allNodes.filter((node) =>
         NodeAddress.hasPrefix(node, nodeType.prefix)
       )
       //console.log(indent + `${nodeType.pluralName}:`)
@@ -60,11 +61,11 @@ export function logGraphDetail(props) {
       graphDetail.adapters[adapterType].nodeTypes[nodeType.pluralName] = {
         'pluralName': nodeType.pluralName,
         'totalNodes': nodes.length,
-        'totalCred': totalNodeTypeCred
+        'totalCred': totalNodeTypeCred,
+        'avgCred': nodes.length/totalNodeTypeCred
       }
 
       totalAdapterCred += totalNodeTypeCred
-      totalProjectCred += totalAdapterCred
       totalAdapterNodes += nodes.length
 
       //console.log(indent + indent + `total cred: ${totalNodeTypeCred.toFixed(2)}`)
@@ -72,8 +73,14 @@ export function logGraphDetail(props) {
 
     graphDetail.adapters[adapterType]['totalNodes'] = totalAdapterNodes;
     graphDetail.adapters[adapterType]['totalCred'] = totalAdapterCred;
+    graphDetail.adapters[adapterType]['avgCred'] = totalAdapterNodes/totalAdapterCred;
+    totalProjectCred += totalAdapterCred
 
   })
+
+  graphDetail.totalNodes = allNodes.length
+  graphDetail.totalCred = totalProjectCred.toFixed(2)
+  graphDetail.averageCred = (totalProjectCred/allNodes.length).toFixed(2)
 
   printGraphDetail(graphDetail)
 }
@@ -82,6 +89,9 @@ export function logGraphDetail(props) {
 function printGraphDetail(graphDetail) {
 
   console.log(graphDetail)
+  console.log(`Total nodes in project: ${graphDetail.totalNodes}`)
+  console.log(`Total project cred:  ${graphDetail.totalCred}`)
+  console.log(`Average cred:  ${graphDetail.averageCred}`)
 
   const adapterKeys = Object.keys(graphDetail.adapters).sort()
 
@@ -90,6 +100,7 @@ function printGraphDetail(graphDetail) {
     console.log(adapterKey)
     console.log(indent(1) + "total nodes: " + adapter.totalNodes)
     console.log(indent(1) + "total cred: " + adapter.totalCred)
+    console.log(indent(1) + "avgerage cred: " + adapter.avgCred)
 
     const nodeTypeKeys = Object.keys(adapter.nodeTypes).sort()
 
@@ -98,6 +109,7 @@ function printGraphDetail(graphDetail) {
       console.log(indent(2) + nodeType.pluralName)
       console.log(indent(3) + "total nodes: " + nodeType.totalNodes)
       console.log(indent(3) + "total cred: " + nodeType.totalCred)
+      console.log(indent(3) + "avgerage cred: " + nodeType.avgCred)
     })
   })
 }

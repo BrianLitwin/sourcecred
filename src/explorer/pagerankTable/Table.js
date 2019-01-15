@@ -77,17 +77,17 @@ export class PagerankTable extends React.PureComponent<
     const {showWeightConfig, topLevelFilter} = this.state;
     const {pnd, maxEntriesPerList, adapters} = this.props;
 
+    //prob inefficient
+
+    const allNodes =  Array.from(pnd.keys())
+    const totalCred = allNodes.reduce((sum, node) => { return sum + pnd.get(node).score}, 0);
+    console.log("total cred: " + totalCred)
+    const avgCred_total = (totalCred/allNodes.length).toFixed(2)
+
     const nodeType = this.props.adapters.static().typeMatchingNode(topLevelFilter)
-    const nodes = Array.from(pnd.keys()).filter((node) =>
+    const nodes = allNodes.filter((node) =>
       NodeAddress.hasPrefix(node, topLevelFilter)
     )
-
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
-    //  console.log(typeof(pnd.keys()))
-
-    // pnd.keys().forEach((key) => {
-    //   console.log(key)
-    // })
 
     const nodeCountTotal = pnd.size
     const nodeCountFiltered = nodes.length
@@ -110,15 +110,33 @@ export class PagerankTable extends React.PureComponent<
 
     var avg = (total/count).toFixed(2);
 
-    function renderGraphDetail() {
-      return(
+
+    function gDetail(title, nodeCount, avgCred) {
+      return (
         <div>
-          <p>{formatNodeCount(nodeType, nodeCountFiltered)}</p>
-          <p> avg: {avg}</p>
-          <p>{totalCount}</p>
+          <h4 style={{marginBottom: "0.3em"}}>{title}</h4>
+            <li>{nodeCount}</li>
+            <li>{avgCred}</li>
         </div>
       )
     }
+
+    function renderGraphDetail() {
+
+      return (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+          }}
+        >
+          {gDetail(`${nodeType.name} nodes`, `${nodes.length} total nodes`, `${avg} average Cred`)}
+          {gDetail("Total Nodes", `${nodeCountTotal} nodes`, `${avgCred_total} average Cred`)}
+        </div>
+      )
+    }
+
 
     logGraphDetail({
       pnd: pnd,
@@ -135,6 +153,7 @@ export class PagerankTable extends React.PureComponent<
             onChange={(wt) => this.props.onWeightedTypesChange(wt)}
           />
         )}
+        {renderGraphDetail()}
         {this.renderTable(nodes)}
       </div>
     );
