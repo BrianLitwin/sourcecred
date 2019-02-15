@@ -28,6 +28,7 @@ export const assemblesEdgeType: EdgeType = Object.freeze({
   backwardName: "is assembled by",
   defaultBackwardWeight: 2 ** -2,
   prefix: EdgeAddress.fromParts(["factorio", "assembles"]),
+  description: "Connects assembly machines to products they assemble.",
 });
 
 export const transportsEdgeType: EdgeType = Object.freeze({
@@ -36,6 +37,7 @@ export const transportsEdgeType: EdgeType = Object.freeze({
   backwardName: "is transported by",
   defaultBackwardWeight: 2 ** -1,
   prefix: EdgeAddress.fromParts(["factorio", "transports"]),
+  description: "Connects transporter belts to objects they transport.",
 });
 
 export const declaration: PluginDeclaration = Object.freeze({
