@@ -1,7 +1,13 @@
 // @flow
 
 import sortBy from "lodash.sortby";
-import {Graph, NodeAddress, EdgeAddress, type Edge} from "./graph";
+import {
+  Graph,
+  NodeAddress,
+  EdgeAddress,
+  type NodeAddressT,
+  type Edge,
+} from "./graph";
 import {PagerankGraph} from "./pagerankGraph";
 import {advancedGraph} from "./graphTestUtil";
 import * as NullUtil from "../util/null";
@@ -55,6 +61,50 @@ describe("core/pagerankGraph", () => {
       expect(() => pg.node(NodeAddress.empty)).toThrowError(
         "underlying Graph has been modified"
       );
+    });
+  });
+
+  describe("node prefix filtering", () => {
+    const n1 = NodeAddress.empty;
+    const n2 = NodeAddress.fromParts(["foo"]);
+    const n3 = NodeAddress.fromParts(["foo", "bar"]);
+    const n4 = NodeAddress.fromParts(["zod", "bar"]);
+    const g = () =>
+      new Graph()
+        .addNode(n1)
+        .addNode(n2)
+        .addNode(n3)
+        .addNode(n4);
+    const pg = () => new PagerankGraph(g(), defaultEvaluator);
+
+    function expectPagerankGraphToEqualGraph(
+      options: {|+prefix: NodeAddressT|} | void
+    ) {
+      const pagerankGraphNodes = Array.from(pg().nodes(options)).sort();
+      const graphNodes = Array.from(g().nodes(options)).sort();
+
+      pagerankGraphNodes.forEach(
+        (pgNode, i) =>
+          expect(pgNode.node).toEqual(graphNodes[i]) &&
+          expect(pgNode.score).toBe(0.25)
+      );
+    }
+
+    it("uses empty prefix when no options object", () => {
+      expectPagerankGraphToEqualGraph(undefined);
+    });
+
+    it("requires a prefix when options are specified", () => {
+      // $ExpectFlowError
+      expect(() => pg().nodes({})).toThrow("prefix");
+    });
+
+    it("does a prefix filter", () => {
+      expectPagerankGraphToEqualGraph({prefix: n2});
+    });
+
+    it("yields nothing when prefix matches nothing", () => {
+      expectPagerankGraphToEqualGraph({prefix: NodeAddress.fromParts(["2"])});
     });
   });
 

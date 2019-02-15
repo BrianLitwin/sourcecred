@@ -159,8 +159,8 @@ export class PagerankGraph {
     return this._syntheticLoopWeight;
   }
 
-  *_nodesIterator(): Iterator<ScoredNode> {
-    for (const node of this._graph.nodes()) {
+  *_nodesIterator(options?: {|+prefix: NodeAddressT|}): Iterator<ScoredNode> {
+    for (const node of this._graph.nodes(options)) {
       const score = NullUtil.get(this._scores.get(node));
       yield {node, score};
     }
@@ -171,9 +171,12 @@ export class PagerankGraph {
    *
    * TODO(#1020): Allow optional filtering, as in Graph.nodes.
    */
-  nodes(): Iterator<ScoredNode> {
+  nodes(options?: {|+prefix: NodeAddressT|}): Iterator<ScoredNode> {
+    if (options != null && options.prefix == null) {
+      throw new Error(`Invalid prefix: ${String(options.prefix)}`);
+    }
     this._verifyGraphNotModified();
-    return this._nodesIterator();
+    return this._nodesIterator(options);
   }
 
   /**
