@@ -11,6 +11,7 @@ import type {DynamicExplorerAdapter} from "../adapters/explorerAdapter";
 import {FALLBACK_NAME} from "../../analysis/fallbackDeclaration";
 import type {WeightedTypes} from "../../analysis/weights";
 import {WeightConfig} from "../weights/WeightConfig";
+import {TableStats} from "./TableStats";
 
 import {NodeRowList} from "./Node";
 
@@ -70,7 +71,7 @@ export class PagerankTable extends React.PureComponent<
   }
 
   render() {
-    const {showWeightConfig} = this.state;
+    const {showWeightConfig, topLevelFilter} = this.state;
     return (
       <div style={{marginTop: 10}}>
         {this.renderConfigurationRow()}
@@ -81,6 +82,12 @@ export class PagerankTable extends React.PureComponent<
             onChange={(wt) => this.props.onWeightedTypesChange(wt)}
           />
         )}
+        {
+          <TableStats
+            topLevelFilter={topLevelFilter}
+            adapters={this.props.adapters}
+          />
+        }
         {this.renderTable()}
       </div>
     );
