@@ -3,10 +3,15 @@
 
 import path from "path";
 import rimraf from "rimraf";
+const fs = require("fs-extra");
 
 import dedent from "../util/dedent";
 import {type Command} from "./command";
 import * as Common from "./common";
+import {directoryForProjectId} from "../core/project_io";
+import {repoCacheFilename} from "../plugins/github/fetchGithubRepo";
+import {stringToRepoId} from "../core/repoId";
+import {type RepoId} from "../core/repoId";
 
 function usage(print: (string) => void): void {
   print(
@@ -46,8 +51,14 @@ function die(std, message) {
   return 1;
 }
 
-export function makeClear(removeDir: (string) => Promise<void>): Command {
+export function makeClear(
+  removeDir: (string) => Promise<void>,
+  repoCacheFilename: (repoId: RepoId, token: string) => Promise<any>
+): Command {
   return async function clear(args, std) {
+    const sourcecredDirectory = Common.sourcecredDirectory();
+    const cacheDirectory = path.join(sourcecredDirectory, "cache");
+
     async function remove(dir) {
       try {
         await removeDir(dir);
@@ -55,6 +66,19 @@ export function makeClear(removeDir: (string) => Promise<void>): Command {
       } catch (error) {
         return die(std, `${error}`);
       }
+    }
+
+    async function rmProject(repoArg, projectPath) {
+      const repoId = stringToRepoId(repoArg);
+      const {dbFilename} = await repoCacheFilename(
+        repoId,
+        validateGithubToken()
+      );
+      const rmCache = await remove(path.join(cacheDirectory, dbFilename));
+      if (rmCache !== 0) {
+        return rmCache;
+      }
+      return await remove(projectPath);
     }
 
     switch (args.length) {
@@ -67,13 +91,22 @@ export function makeClear(removeDir: (string) => Promise<void>): Command {
             return 0;
 
           case "--all":
-            return remove(Common.sourcecredDirectory());
+            return remove(sourcecredDirectory);
 
           case "--cache":
-            return remove(path.join(Common.sourcecredDirectory(), "cache"));
+            return remove(cacheDirectory);
 
           default:
-            return die(std, `unrecognized argument: '${args[0]}'`);
+            const projectPath = directoryForProjectId(
+              args[0],
+              sourcecredDirectory
+            );
+
+            if (await fs.exists(projectPath)) {
+              return rmProject(args[0], projectPath);
+            } else {
+              return die(std, `unrecognized argument: '${args[0]}'`);
+            }
         }
       default:
         return die(
@@ -106,6 +139,18 @@ export const help: Command = async (args, std) => {
   }
 };
 
-export const clear = makeClear(removeDir);
+export function validateGithubToken(): string {
+  const token = Common.githubToken();
+  if (token == null) {
+    throw new Error("SOURCECRED_GITHUB_TOKEN not set");
+  }
+  const validToken = /^[A-Fa-f0-9]{40}$/;
+  if (!validToken.test(token)) {
+    throw new Error(`Invalid token: ${token}`);
+  }
+  return token;
+}
+
+export const clear = makeClear(removeDir, repoCacheFilename);
 
 export default clear;

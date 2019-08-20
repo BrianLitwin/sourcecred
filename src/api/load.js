@@ -41,6 +41,7 @@ export async function load(
   taskReporter: TaskReporter
 ): Promise<void> {
   const {project, params, sourcecredDirectory, githubToken} = options;
+
   const loadTask = `load-${options.project.id}`;
   taskReporter.start(loadTask);
   const cacheDirectory = path.join(sourcecredDirectory, "cache");
